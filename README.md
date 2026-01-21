@@ -19,14 +19,28 @@ So I built a simple TUI app where you can register your own sound effects and pl
 
 ### How to Add Your Own Effect
 1. Open `effect.с`
-2. Write your per-sample processing function:
+2. Implement your processing function with the signature `audio_process_fn`:
 
 ```c
-float my_effect(float sample, void *user_data) {
-    return sample * 1.5f;
+typedef void (*audio_process_fn)(SAMPLE *samples,
+                                 unsigned long frameCount,
+                                 const audio_params_t *p);
+
+void invert(SAMPLE *samples, unsigned long frameCount, const audio_params_t *p) {
+    (void)p;
+    for (unsigned long i = 0; i < frameCount; ++i) {
+        samples[i] = -samples[i];
+    }
 }
 ```
-3. Register it to ```const effect_t effects[]```
+3. Register the effect in the global effects[] array
+```с 
+const effect_t effects[] = {
+    // ... other effects ...
+    { "Invert", "Inverts signal polarity", invert },
+    // ...
+};
+```
 ### Usage
 ```bash
 cc -o wavecli *.c $(pkg-config --cflags --libs portaudio-2.0)
