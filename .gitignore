@@ -1,0 +1,6 @@
+*.out
+*.o
+*.wav
+*.pcm
+*.raw
+.vscode
